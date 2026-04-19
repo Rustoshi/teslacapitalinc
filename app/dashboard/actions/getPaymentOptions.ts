@@ -3,12 +3,27 @@
 import dbConnect from "@/lib/mongodb";
 import PaymentOption from "@/models/PaymentOption";
 import BankPaymentOption from "@/models/BankPaymentOption";
+import WireTransferOption from "@/models/WireTransferOption";
 
 export interface PaymentOptionData {
     id: string;
     network: string;
     ticker: string;
     walletAddress: string;
+}
+
+export interface WireTransferOptionData {
+    id: string;
+    beneficiaryName: string;
+    beneficiaryAddress?: string;
+    bankName: string;
+    bankAddress?: string;
+    swiftCode: string;
+    accountNumber: string;
+    iban?: string;
+    currency: string;
+    referenceNote?: string;
+    instructions?: string;
 }
 
 export interface BankPaymentOptionData {
@@ -58,6 +73,30 @@ export async function getBankPaymentOptions(): Promise<BankPaymentOptionData[]> 
         }));
     } catch (error) {
         console.error("Failed to fetch bank payment options:", error);
+        return [];
+    }
+}
+
+export async function getWireTransferOptions(): Promise<WireTransferOptionData[]> {
+    try {
+        await dbConnect();
+        const options = await WireTransferOption.find({ isActive: true }).lean();
+
+        return options.map((opt: any) => ({
+            id: opt._id.toString(),
+            beneficiaryName: opt.beneficiaryName,
+            beneficiaryAddress: opt.beneficiaryAddress,
+            bankName: opt.bankName,
+            bankAddress: opt.bankAddress,
+            swiftCode: opt.swiftCode,
+            accountNumber: opt.accountNumber,
+            iban: opt.iban,
+            currency: opt.currency,
+            referenceNote: opt.referenceNote,
+            instructions: opt.instructions,
+        }));
+    } catch (error) {
+        console.error("Failed to fetch wire transfer options:", error);
         return [];
     }
 }

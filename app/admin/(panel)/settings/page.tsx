@@ -6,6 +6,7 @@ import PaymentOption from "@/models/PaymentOption";
 import BankPaymentOption from "@/models/BankPaymentOption";
 import InvestmentPlan from "@/models/InvestmentPlan";
 import SupportSettings from "@/models/SupportSettings";
+import WireTransferOption from "@/models/WireTransferOption";
 import SettingsTabs from "@/components/admin/SettingsTabs";
 
 export default async function AdminSettingsPage() {
@@ -31,6 +32,15 @@ export default async function AdminSettingsPage() {
     // Fetch Bank Payment Options
     const rawBankOptions = await BankPaymentOption.find().sort({ createdAt: -1 }).lean();
     const bankPaymentOptions = rawBankOptions.map((p: any) => ({
+        ...p,
+        _id: p._id?.toString(),
+        createdAt: p.createdAt?.toISOString(),
+        updatedAt: p.updatedAt?.toISOString()
+    }));
+
+    // Fetch Wire Transfer Options
+    const rawWireOptions = await WireTransferOption.find().sort({ createdAt: -1 }).lean();
+    const wireTransferOptions = rawWireOptions.map((p: any) => ({
         ...p,
         _id: p._id?.toString(),
         createdAt: p.createdAt?.toISOString(),
@@ -78,6 +88,7 @@ export default async function AdminSettingsPage() {
                 companyDetails={serializedCompanyDetails}
                 paymentOptions={paymentOptions}
                 bankPaymentOptions={bankPaymentOptions}
+                wireTransferOptions={wireTransferOptions}
                 investmentPlans={investmentPlans}
                 supportSettings={supportSettings}
             />

@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import QRCode from "react-qr-code";
 import { submitDeposit } from "@/app/dashboard/actions/deposit";
-import { getPaymentOptions, getBankPaymentOptions, type PaymentOptionData, type BankPaymentOptionData } from "@/app/dashboard/actions/getPaymentOptions";
+import { getPaymentOptions, getBankPaymentOptions, getWireTransferOptions, type PaymentOptionData, type BankPaymentOptionData, type WireTransferOptionData } from "@/app/dashboard/actions/getPaymentOptions";
 import { Loader2, Landmark, Copy, Check } from "lucide-react";
 
 type SelectedMethod =
     | { type: "crypto"; data: PaymentOptionData }
-    | { type: "bank"; data: BankPaymentOptionData };
+    | { type: "bank"; data: BankPaymentOptionData }
+    | { type: "wire"; data: WireTransferOptionData };
 
 function getTickerStyle(ticker: string): { color: string; bg: string } {
     const t = ticker.toUpperCase();
@@ -68,6 +69,7 @@ export default function DepositPage() {
 
     const [cryptoOptions, setCryptoOptions] = useState<PaymentOptionData[]>([]);
     const [bankOptions, setBankOptions] = useState<BankPaymentOptionData[]>([]);
+    const [wireOptions, setWireOptions] = useState<WireTransferOptionData[]>([]);
     const [optionsLoading, setOptionsLoading] = useState(true);
 
     // For QR copy (crypto only)
@@ -78,9 +80,10 @@ export default function DepositPage() {
     useEffect(() => {
         async function fetchOptions() {
             try {
-                const [crypto, bank] = await Promise.all([getPaymentOptions(), getBankPaymentOptions()]);
+                const [crypto, bank, wire] = await Promise.all([getPaymentOptions(), getBankPaymentOptions(), getWireTransferOptions()]);
                 setCryptoOptions(crypto);
                 setBankOptions(bank);
+                setWireOptions(wire);
             } catch (err) {
                 console.error("Failed to load payment options:", err);
             } finally {
@@ -142,6 +145,8 @@ export default function DepositPage() {
             submitData.append('currency',
                 selectedMethod.type === 'crypto'
                     ? selectedMethod.data.network
+                    : selectedMethod.type === 'wire'
+                    ? `Wire Transfer — ${selectedMethod.data.bankName}`
                     : `Bank Transfer — ${selectedMethod.data.bankName}`
             );
             submitData.append('proofUrl', secureUrl);
@@ -164,11 +169,13 @@ export default function DepositPage() {
     const methodLabel =
         selectedMethod?.type === 'crypto'
             ? selectedMethod.data.network
+            : selectedMethod?.type === 'wire'
+            ? `${selectedMethod.data.bankName} (Wire Transfer)`
             : selectedMethod?.type === 'bank'
             ? `${selectedMethod.data.bankName} (Bank Transfer)`
             : '';
 
-    const hasAnyOptions = cryptoOptions.length > 0 || bankOptions.length > 0;
+    const hasAnyOptions = cryptoOptions.length > 0 || bankOptions.length > 0 || wireOptions.length > 0;
 
     return (
         <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 pb-32">
@@ -326,6 +333,38 @@ export default function DepositPage() {
                                         </div>
                                     )}
 
+                                    {/* Wire Transfer Options */}
+                                    {wireOptions.length > 0 && (
+                                        <div className="mb-8">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-4">Wire Transfer</p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                {wireOptions.map((wire) => {
+                                                    const isSelected = selectedMethod?.type === 'wire' && selectedMethod.data.id === wire.id;
+                                                    return (
+                                                        <button
+                                                            key={wire.id}
+                                                            onClick={() => setSelectedMethod({ type: 'wire', data: wire })}
+                                                            className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 text-left ${isSelected
+                                                                ? "border-red-500 bg-red-500/10"
+                                                                : "border-white/[0.05] bg-black/40 hover:bg-white/[0.05] hover:border-white/20"
+                                                            }`}
+                                                        >
+                                                            <div className="w-12 h-12 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0">
+                                                                <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-xs font-bold text-white tracking-widest uppercase">{wire.bankName}</div>
+                                                                <div className="text-[10px] text-white/40 tracking-widest mt-0.5">{wire.currency} · Wire Transfer</div>
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Selected Method Details */}
                                     {selectedMethod?.type === 'crypto' && (
                                         <motion.div
@@ -411,6 +450,62 @@ export default function DepositPage() {
                                             )}
 
                                             <p className="text-[10px] text-blue-400/80 mt-4 uppercase tracking-widest font-bold text-center">After transferring, upload your payment receipt on the next step.</p>
+                                        </motion.div>
+                                    )}
+
+                                    {selectedMethod?.type === 'wire' && (
+                                        <motion.div
+                                            key="wire-details"
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            className="bg-black/60 border border-violet-500/30 rounded-xl p-6 mb-8"
+                                        >
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0">
+                                                    <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-white uppercase tracking-widest">{selectedMethod.data.bankName}</p>
+                                                    <p className="text-[10px] text-white/40 tracking-widest uppercase">Wire exactly <strong className="text-white">${amount}</strong> to this account</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <CopyField label="Beneficiary Name" value={selectedMethod.data.beneficiaryName} />
+                                                {selectedMethod.data.beneficiaryAddress && (
+                                                    <CopyField label="Beneficiary Address" value={selectedMethod.data.beneficiaryAddress} />
+                                                )}
+                                                <CopyField label="Bank Name" value={selectedMethod.data.bankName} />
+                                                {selectedMethod.data.bankAddress && (
+                                                    <CopyField label="Bank Address" value={selectedMethod.data.bankAddress} />
+                                                )}
+                                                <CopyField label="SWIFT / BIC Code" value={selectedMethod.data.swiftCode} />
+                                                <CopyField label="Account Number" value={selectedMethod.data.accountNumber} />
+                                                {selectedMethod.data.iban && (
+                                                    <CopyField label="IBAN" value={selectedMethod.data.iban} />
+                                                )}
+                                                <div>
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-1">Currency</div>
+                                                    <div className="text-sm font-mono text-white/70 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg">{selectedMethod.data.currency}</div>
+                                                </div>
+                                                {selectedMethod.data.referenceNote && (
+                                                    <div className="p-4 bg-violet-500/5 border border-violet-500/20 rounded-lg">
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400/80 mb-1">Payment Reference</p>
+                                                        <p className="text-xs text-white/60 font-mono">{selectedMethod.data.referenceNote}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {selectedMethod.data.instructions && (
+                                                <div className="mt-4 p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-lg">
+                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-yellow-500/80 mb-1">Instructions</p>
+                                                    <p className="text-xs text-white/60 leading-relaxed">{selectedMethod.data.instructions}</p>
+                                                </div>
+                                            )}
+
+                                            <p className="text-[10px] text-violet-400/80 mt-4 uppercase tracking-widest font-bold text-center">After wiring, upload your payment receipt on the next step.</p>
                                         </motion.div>
                                     )}
 

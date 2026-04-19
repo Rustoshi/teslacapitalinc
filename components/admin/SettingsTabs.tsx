@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Building2, Wallet, TrendingUp, Plus, Edit, Trash2, Check, X, Loader2, Save, Shield, Landmark, MessageSquare } from "lucide-react";
-import { updateCompanyDetails, addPaymentOption, deletePaymentOption, addBankPaymentOption, deleteBankPaymentOption, addInvestmentPlan, updateInvestmentPlan, deleteInvestmentPlan, updateAdminPassword, updateSupportSettings } from "@/app/admin/actions/settings";
+import { updateCompanyDetails, addPaymentOption, deletePaymentOption, addBankPaymentOption, deleteBankPaymentOption, addWireTransferOption, deleteWireTransferOption, addInvestmentPlan, updateInvestmentPlan, deleteInvestmentPlan, updateAdminPassword, updateSupportSettings } from "@/app/admin/actions/settings";
 import { useRouter } from "next/navigation";
 
-export default function SettingsTabs({ companyDetails, paymentOptions, bankPaymentOptions, investmentPlans, supportSettings }: { companyDetails: any, paymentOptions: any[], bankPaymentOptions: any[], investmentPlans: any[], supportSettings: any }) {
+export default function SettingsTabs({ companyDetails, paymentOptions, bankPaymentOptions, wireTransferOptions, investmentPlans, supportSettings }: { companyDetails: any, paymentOptions: any[], bankPaymentOptions: any[], wireTransferOptions: any[], investmentPlans: any[], supportSettings: any }) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'general' | 'payment' | 'plans' | 'security' | 'support'>('general');
 
@@ -33,6 +33,7 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
     const [securitySuccess, setSecuritySuccess] = useState(false);
     const [showAddPayment, setShowAddPayment] = useState(false);
     const [showAddBankPayment, setShowAddBankPayment] = useState(false);
+    const [showAddWire, setShowAddWire] = useState(false);
     const [showAddPlan, setShowAddPlan] = useState(false);
     const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
     const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -79,6 +80,24 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
         if (!confirm("Are you sure you want to delete this bank payment option?")) return;
         setLoadingId(id);
         await deleteBankPaymentOption(id);
+        setLoadingId(null);
+        router.refresh();
+    };
+
+    const handleAddWire = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setLoadingId('new-wire');
+        const formData = new FormData(e.currentTarget);
+        await addWireTransferOption(formData);
+        setShowAddWire(false);
+        setLoadingId(null);
+        router.refresh();
+    };
+
+    const handleDeleteWire = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this wire transfer option?")) return;
+        setLoadingId(id);
+        await deleteWireTransferOption(id);
         setLoadingId(null);
         router.refresh();
     };
@@ -346,6 +365,119 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                                 <div className="pt-2 border-t border-white/[0.05]">
                                                     <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Instructions</div>
                                                     <div className="text-xs text-white/50 italic">{bank.instructions}</div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {/* WIRE TRANSFER */}
+                        <div className="mt-10 pt-8 border-t border-white/[0.06]">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <h3 className="text-sm font-bold tracking-widest text-white uppercase">Wire Transfer Accounts</h3>
+                                </div>
+                                <button onClick={() => setShowAddWire(!showAddWire)} className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.1] text-white px-4 py-2 rounded-lg text-xs font-bold tracking-widest uppercase transition-colors shrink-0">
+                                    {showAddWire ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                    {showAddWire ? 'Cancel' : 'Add Wire Account'}
+                                </button>
+                            </div>
+
+                            {showAddWire && (
+                                <form onSubmit={handleAddWire} className="bg-white/[0.02] border border-violet-500/20 rounded-xl p-6 mb-6 animate-in fade-in slide-in-from-top-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-white mb-4">New Wire Transfer Account</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Beneficiary Name <span className="text-red-500">*</span></label>
+                                            <input name="beneficiaryName" type="text" required placeholder="e.g. Tesla Capital Inc." className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Beneficiary Address</label>
+                                            <input name="beneficiaryAddress" type="text" placeholder="e.g. 1 Tesla Road, Austin TX (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Bank Name <span className="text-red-500">*</span></label>
+                                            <input name="bankName" type="text" required placeholder="e.g. JPMorgan Chase" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Bank Address</label>
+                                            <input name="bankAddress" type="text" placeholder="e.g. 270 Park Ave, New York (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">SWIFT / BIC Code <span className="text-red-500">*</span></label>
+                                            <input name="swiftCode" type="text" required placeholder="e.g. CHASUS33" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Account Number <span className="text-red-500">*</span></label>
+                                            <input name="accountNumber" type="text" required placeholder="e.g. 1234567890" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">IBAN</label>
+                                            <input name="iban" type="text" placeholder="e.g. GB29 NWBK 6016 1331 (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Currency</label>
+                                            <input name="currency" type="text" defaultValue="USD" placeholder="e.g. USD" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5 sm:col-span-2">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Payment Reference Note</label>
+                                            <input name="referenceNote" type="text" placeholder="e.g. Include your username as reference (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5 sm:col-span-2">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Special Instructions</label>
+                                            <textarea name="instructions" rows={2} placeholder="e.g. Allow 1–3 business days for wire to clear (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors resize-none" />
+                                        </div>
+                                    </div>
+                                    <button disabled={loadingId === 'new-wire'} type="submit" className="bg-white hover:bg-white/90 text-black px-6 py-2 rounded-lg text-xs font-bold tracking-widest uppercase transition-colors flex items-center gap-2">
+                                        {loadingId === 'new-wire' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Wire Account'}
+                                    </button>
+                                </form>
+                            )}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {wireTransferOptions.length === 0 ? (
+                                    <div className="col-span-full p-8 text-center border border-white/[0.05] border-dashed rounded-xl text-white/40 text-sm">No wire transfer accounts configured.</div>
+                                ) : wireTransferOptions.map((wire: any) => (
+                                    <div key={wire._id} className="bg-white/[0.02] border border-white/[0.08] hover:border-white/[0.15] rounded-xl p-5 transition-all group relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-16 h-16 -mr-8 -mt-8 rotate-45 bg-violet-500/10"></div>
+                                        <div className="flex justify-between items-start mb-4 relative z-10">
+                                            <div>
+                                                <h4 className="font-bold text-white tracking-widest uppercase">{wire.bankName}</h4>
+                                                <span className="text-[10px] text-white/40 tracking-widest uppercase">{wire.currency} · Wire Transfer</span>
+                                            </div>
+                                            <div className="flex gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                                                <button disabled={loadingId === wire._id} onClick={() => handleDeleteWire(wire._id)} className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors text-red-400">
+                                                    {loadingId === wire._id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="bg-black/30 p-3 rounded-lg relative z-10 space-y-2">
+                                            <div>
+                                                <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Beneficiary</div>
+                                                <div className="text-xs font-mono text-white/70">{wire.beneficiaryName}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">SWIFT / BIC</div>
+                                                <div className="text-xs font-mono text-white/70">{wire.swiftCode}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Account Number</div>
+                                                <div className="text-xs font-mono text-white/70">{wire.accountNumber}</div>
+                                            </div>
+                                            {wire.iban && (
+                                                <div>
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">IBAN</div>
+                                                    <div className="text-xs font-mono text-white/70 break-all">{wire.iban}</div>
+                                                </div>
+                                            )}
+                                            {wire.referenceNote && (
+                                                <div className="pt-2 border-t border-white/[0.05]">
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Reference Note</div>
+                                                    <div className="text-xs text-white/50 italic">{wire.referenceNote}</div>
                                                 </div>
                                             )}
                                         </div>

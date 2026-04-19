@@ -6,6 +6,7 @@ import PaymentOption from "@/models/PaymentOption";
 import BankPaymentOption from "@/models/BankPaymentOption";
 import InvestmentPlan from "@/models/InvestmentPlan";
 import SupportSettings from "@/models/SupportSettings";
+import WireTransferOption from "@/models/WireTransferOption";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
@@ -153,6 +154,40 @@ export async function deleteInvestmentPlan(id: string) {
     try {
         await dbConnect();
         await InvestmentPlan.findByIdAndDelete(id);
+        revalidatePath('/admin/settings');
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+// --- WIRE TRANSFER ACTIONS ---
+export async function addWireTransferOption(formData: FormData) {
+    try {
+        await dbConnect();
+        await WireTransferOption.create({
+            beneficiaryName: formData.get('beneficiaryName'),
+            beneficiaryAddress: formData.get('beneficiaryAddress') || undefined,
+            bankName: formData.get('bankName'),
+            bankAddress: formData.get('bankAddress') || undefined,
+            swiftCode: formData.get('swiftCode'),
+            accountNumber: formData.get('accountNumber'),
+            iban: formData.get('iban') || undefined,
+            currency: formData.get('currency') || 'USD',
+            referenceNote: formData.get('referenceNote') || undefined,
+            instructions: formData.get('instructions') || undefined,
+        });
+        revalidatePath('/admin/settings');
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function deleteWireTransferOption(id: string) {
+    try {
+        await dbConnect();
+        await WireTransferOption.findByIdAndDelete(id);
         revalidatePath('/admin/settings');
         return { success: true };
     } catch (error: any) {
