@@ -5,6 +5,7 @@ import CompanyDetails from "@/models/CompanyDetails";
 import PaymentOption from "@/models/PaymentOption";
 import BankPaymentOption from "@/models/BankPaymentOption";
 import InvestmentPlan from "@/models/InvestmentPlan";
+import SupportSettings from "@/models/SupportSettings";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
@@ -153,6 +154,30 @@ export async function deleteInvestmentPlan(id: string) {
         await dbConnect();
         await InvestmentPlan.findByIdAndDelete(id);
         revalidatePath('/admin/settings');
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+// --- SUPPORT SETTINGS ACTIONS ---
+export async function updateSupportSettings(formData: FormData) {
+    try {
+        await dbConnect();
+        const mode = formData.get('mode') as 'smartsupp' | 'telegram';
+        const telegramUsername = (formData.get('telegramUsername') as string || '').replace(/^@/, '').trim();
+
+        let settings = await SupportSettings.findOne();
+        if (settings) {
+            settings.mode = mode;
+            settings.telegramUsername = telegramUsername;
+            await settings.save();
+        } else {
+            await SupportSettings.create({ mode, telegramUsername });
+        }
+
+        revalidatePath('/admin/settings');
+        revalidatePath('/', 'layout');
         return { success: true };
     } catch (error: any) {
         return { success: false, error: error.message };

@@ -6,26 +6,26 @@ const footerLinks = [
     {
         heading: "Platform",
         links: [
-            { label: "How It Works", href: "#how-it-works" },
-            { label: "Markets", href: "#markets" },
-            { label: "AI Plans", href: "#plans" },
+            { label: "How It Works", href: "/how-it-works" },
+            { label: "Markets", href: "/markets" },
+            { label: "AI Plans", href: "/ai-plans" },
         ],
     },
     {
         heading: "Company",
         links: [
-            { label: "About Us", href: "#" },
-            { label: "Careers", href: "#" },
-            { label: "Press", href: "#" },
-            { label: "Contact", href: "#" },
+            { label: "About Us", href: "/about" },
+            { label: "Careers", href: "/careers" },
+            { label: "Press", href: "/press" },
+            { label: "Contact", href: "/contact" },
         ],
     },
     {
         heading: "Legal",
         links: [
-            { label: "Terms of Service", href: "#" },
-            { label: "Privacy Policy", href: "#" },
-            { label: "Compliance", href: "#" },
+            { label: "Terms of Service", href: "/terms" },
+            { label: "Privacy Policy", href: "/privacy" },
+            { label: "Compliance", href: "/compliance" },
         ],
     },
 ];
@@ -66,13 +66,22 @@ export default function Footer() {
                             <ul className="flex flex-col gap-3">
                                 {col.links.map((link) => (
                                     <li key={link.label}>
-                                        <a
-                                            href={link.href}
-                                            onClick={(e) => scrollTo(e, link.href)}
-                                            className="text-sm text-white/50 hover:text-white transition-colors duration-300 cursor-pointer"
-                                        >
-                                            {link.label}
-                                        </a>
+                                        {link.href.startsWith("/") ? (
+                                            <Link
+                                                href={link.href}
+                                                className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+                                            >
+                                                {link.label}
+                                            </Link>
+                                        ) : (
+                                            <a
+                                                href={link.href}
+                                                onClick={(e) => scrollTo(e, link.href)}
+                                                className="text-sm text-white/50 hover:text-white transition-colors duration-300 cursor-pointer"
+                                            >
+                                                {link.label}
+                                            </a>
+                                        )}
                                     </li>
                                 ))}
                             </ul>

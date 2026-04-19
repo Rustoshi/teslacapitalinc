@@ -1,13 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Wallet, TrendingUp, Plus, Edit, Trash2, Check, X, Loader2, Save, Shield, Landmark } from "lucide-react";
-import { updateCompanyDetails, addPaymentOption, deletePaymentOption, addBankPaymentOption, deleteBankPaymentOption, addInvestmentPlan, updateInvestmentPlan, deleteInvestmentPlan, updateAdminPassword } from "@/app/admin/actions/settings";
+import { Building2, Wallet, TrendingUp, Plus, Edit, Trash2, Check, X, Loader2, Save, Shield, Landmark, MessageSquare } from "lucide-react";
+import { updateCompanyDetails, addPaymentOption, deletePaymentOption, addBankPaymentOption, deleteBankPaymentOption, addInvestmentPlan, updateInvestmentPlan, deleteInvestmentPlan, updateAdminPassword, updateSupportSettings } from "@/app/admin/actions/settings";
 import { useRouter } from "next/navigation";
 
-export default function SettingsTabs({ companyDetails, paymentOptions, bankPaymentOptions, investmentPlans }: { companyDetails: any, paymentOptions: any[], bankPaymentOptions: any[], investmentPlans: any[] }) {
+export default function SettingsTabs({ companyDetails, paymentOptions, bankPaymentOptions, investmentPlans, supportSettings }: { companyDetails: any, paymentOptions: any[], bankPaymentOptions: any[], investmentPlans: any[], supportSettings: any }) {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<'general' | 'payment' | 'plans' | 'security'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'payment' | 'plans' | 'security' | 'support'>('general');
+
+    // Support widget state
+    const [supportMode, setSupportMode] = useState<'smartsupp' | 'telegram'>(supportSettings?.mode ?? 'smartsupp');
+    const [telegramUsername, setTelegramUsername] = useState<string>(supportSettings?.telegramUsername ?? '');
+    const [isSavingSupport, setIsSavingSupport] = useState(false);
+    const [supportSaved, setSupportSaved] = useState(false);
+
+    const handleSaveSupport = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSavingSupport(true);
+        setSupportSaved(false);
+        const formData = new FormData(e.currentTarget);
+        await updateSupportSettings(formData);
+        setIsSavingSupport(false);
+        setSupportSaved(true);
+        router.refresh();
+    };
 
     // UI States
     const [isSavingGeneral, setIsSavingGeneral] = useState(false);
@@ -113,7 +130,7 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
         setIsSavingSecurity(false);
     };
 
-    const renderTabButton = (id: 'general' | 'payment' | 'plans' | 'security', label: string, Icon: any) => (
+    const renderTabButton = (id: 'general' | 'payment' | 'plans' | 'security' | 'support', label: string, Icon: any) => (
         <button
             onClick={() => setActiveTab(id as any)}
             className={`flex items-center gap-2 px-6 py-4 text-xs font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === id
@@ -133,6 +150,7 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                 {renderTabButton('payment', 'Payment Methods', Wallet)}
                 {renderTabButton('plans', 'Investment Plans', TrendingUp)}
                 {renderTabButton('security', 'Security', Shield)}
+                {renderTabButton('support', 'Support Widget', MessageSquare)}
             </div>
 
             {/* Tab Content Area */}
@@ -486,6 +504,84 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                             })}
                         </div>
                     </div>
+                )}
+
+                {/* SUPPORT WIDGET */}
+                {activeTab === 'support' && (
+                    <form onSubmit={handleSaveSupport} className="space-y-8 max-w-xl animate-in fade-in duration-300">
+                        <h3 className="text-sm font-bold tracking-widest text-white uppercase mb-6">Support Widget</h3>
+
+                        <div className="space-y-3">
+                            {/* Smartsupp option */}
+                            <label className={`flex items-start gap-4 p-5 rounded-xl border cursor-pointer transition-all ${supportMode === 'smartsupp' ? 'border-red-500/50 bg-red-500/[0.06]' : 'border-white/[0.08] bg-white/[0.02] hover:border-white/[0.15]'}`}>
+                                <input
+                                    type="radio"
+                                    name="mode"
+                                    value="smartsupp"
+                                    checked={supportMode === 'smartsupp'}
+                                    onChange={() => setSupportMode('smartsupp')}
+                                    className="mt-0.5 accent-red-500 shrink-0"
+                                />
+                                <div>
+                                    <p className="text-sm font-bold text-white tracking-wide mb-1">Smartsupp Live Chat</p>
+                                    <p className="text-xs text-white/40 font-light leading-relaxed">Show the Smartsupp live chat bubble on all public pages. Visitors can chat with your support team in real time.</p>
+                                </div>
+                            </label>
+
+                            {/* Telegram option */}
+                            <label className={`flex items-start gap-4 p-5 rounded-xl border cursor-pointer transition-all ${supportMode === 'telegram' ? 'border-red-500/50 bg-red-500/[0.06]' : 'border-white/[0.08] bg-white/[0.02] hover:border-white/[0.15]'}`}>
+                                <input
+                                    type="radio"
+                                    name="mode"
+                                    value="telegram"
+                                    checked={supportMode === 'telegram'}
+                                    onChange={() => setSupportMode('telegram')}
+                                    className="mt-0.5 accent-red-500 shrink-0"
+                                />
+                                <div className="w-full">
+                                    <p className="text-sm font-bold text-white tracking-wide mb-1">Telegram Support</p>
+                                    <p className="text-xs text-white/40 font-light leading-relaxed mb-4">Replace the live chat with a floating Telegram button. Visitors are linked directly to your Telegram DM.</p>
+                                    {supportMode === 'telegram' && (
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Telegram Username <span className="text-red-500">*</span></label>
+                                            <div className="flex items-center gap-0">
+                                                <span className="px-3 py-3 bg-white/[0.05] border border-r-0 border-white/[0.1] rounded-l-lg text-sm text-white/40">@</span>
+                                                <input
+                                                    name="telegramUsername"
+                                                    type="text"
+                                                    value={telegramUsername}
+                                                    onChange={(e) => setTelegramUsername(e.target.value.replace(/^@/, ''))}
+                                                    required={supportMode === 'telegram'}
+                                                    placeholder="yourusername"
+                                                    className="flex-1 bg-white/[0.03] border border-white/[0.1] rounded-r-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-red-500/50 transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {supportMode !== 'telegram' && (
+                                        <input type="hidden" name="telegramUsername" value={telegramUsername} />
+                                    )}
+                                </div>
+                            </label>
+                        </div>
+
+                        {supportSaved && (
+                            <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-xs p-4 rounded-lg">
+                                Support widget updated successfully. Changes are live.
+                            </div>
+                        )}
+
+                        <div className="pt-4 border-t border-white/[0.05]">
+                            <button
+                                disabled={isSavingSupport}
+                                type="submit"
+                                className="flex items-center gap-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white px-6 py-3 rounded-lg text-xs font-bold tracking-widest uppercase transition-colors"
+                            >
+                                {isSavingSupport ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                Save Widget Settings
+                            </button>
+                        </div>
+                    </form>
                 )}
 
                 {/* SECURITY SETTINGS */}

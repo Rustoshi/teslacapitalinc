@@ -5,6 +5,7 @@ import CompanyDetails from "@/models/CompanyDetails";
 import PaymentOption from "@/models/PaymentOption";
 import BankPaymentOption from "@/models/BankPaymentOption";
 import InvestmentPlan from "@/models/InvestmentPlan";
+import SupportSettings from "@/models/SupportSettings";
 import SettingsTabs from "@/components/admin/SettingsTabs";
 
 export default async function AdminSettingsPage() {
@@ -47,6 +48,16 @@ export default async function AdminSettingsPage() {
         features: p.features.map((f: any) => ({ ...f, _id: f._id?.toString() }))
     }));
 
+    // Fetch or create default Support Settings
+    let rawSupport = await SupportSettings.findOne().lean() as any;
+    if (!rawSupport) {
+        rawSupport = { mode: 'smartsupp', telegramUsername: '' };
+    }
+    const supportSettings = {
+        mode: rawSupport.mode ?? 'smartsupp',
+        telegramUsername: rawSupport.telegramUsername ?? '',
+    };
+
     // Serialize Company Details
     const serializedCompanyDetails = {
         ...companyDetails,
@@ -68,6 +79,7 @@ export default async function AdminSettingsPage() {
                 paymentOptions={paymentOptions}
                 bankPaymentOptions={bankPaymentOptions}
                 investmentPlans={investmentPlans}
+                supportSettings={supportSettings}
             />
         </div>
     );

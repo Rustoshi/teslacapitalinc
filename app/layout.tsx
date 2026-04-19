@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
-import SmartsuppChat from "@/components/SmartsuppChat";
+import SupportWidget from "@/components/SmartsuppChat";
 import GTranslateWidget from "@/components/GTranslateWidget";
+import dbConnect from "@/lib/mongodb";
+import SupportSettings from "@/models/SupportSettings";
 import "./globals.css";
 
 const inter = Inter({
@@ -85,11 +87,24 @@ export const viewport = {
   themeColor: "#000000",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let supportMode: "smartsupp" | "telegram" = "smartsupp";
+  let telegramUsername = "";
+  try {
+    await dbConnect();
+    const settings = await SupportSettings.findOne().lean() as any;
+    if (settings) {
+      supportMode = settings.mode ?? "smartsupp";
+      telegramUsername = settings.telegramUsername ?? "";
+    }
+  } catch {
+    // fall through to defaults
+  }
+
   return (
     <html lang="en" className="dark">
       <body
@@ -99,7 +114,7 @@ export default function RootLayout({
           <div className="relative w-full max-w-[100vw] overflow-x-hidden flex flex-col min-h-screen">
             {children}
           </div>
-          <SmartsuppChat />
+          <SupportWidget mode={supportMode} telegramUsername={telegramUsername} />
           <GTranslateWidget />
         </AuthProvider>
       </body>

@@ -3,29 +3,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 const navLinks = [
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "AI Plans", href: "#plans" },
-    { label: "Markets", href: "#markets" },
+    { label: "How It Works", href: "/how-it-works" },
+    { label: "AI Plans", href: "/ai-plans" },
+    { label: "Markets", href: "/markets" },
 ];
-
-function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, href: string, pathname: string) {
-    if (href.startsWith("#")) {
-        if (pathname === "/invest") {
-            e.preventDefault();
-            const el = document.querySelector(href);
-            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-        // else: let the browser follow /invest#section naturally
-    }
-}
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const pathname = usePathname();
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -56,23 +43,17 @@ export default function Navbar() {
 
                 {/* Center Links — desktop */}
                 <div className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => {
-                        const resolvedHref = link.href.startsWith("#") && pathname !== "/invest"
-                            ? `/invest${link.href}`
-                            : link.href;
-                        return (
-                            <a
-                                key={link.label}
-                                href={resolvedHref}
-                                onClick={(e) => scrollToSection(e, link.href, pathname)}
-                                className="group relative text-sm tracking-[0.08em] text-white/70 hover:text-white transition-colors duration-300 cursor-pointer"
-                                style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                            >
-                                {link.label}
-                                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-300 ease-out" />
-                            </a>
-                        );
-                    })}
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.label}
+                            href={link.href}
+                            className="group relative text-sm tracking-[0.08em] text-white/70 hover:text-white transition-colors duration-300"
+                            style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                        >
+                            {link.label}
+                            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-300 ease-out" />
+                        </Link>
+                    ))}
                 </div>
 
                 {/* Right — auth buttons */}
@@ -112,24 +93,16 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     className="md:hidden bg-black/95 backdrop-blur-md border-t border-white/[0.06] px-6 pb-6 pt-4 flex flex-col gap-4"
                 >
-                    {navLinks.map((link) => {
-                        const resolvedHref = link.href.startsWith("#") && pathname !== "/invest"
-                            ? `/invest${link.href}`
-                            : link.href;
-                        return (
-                        <a
+                    {navLinks.map((link) => (
+                        <Link
                             key={link.label}
-                            href={resolvedHref}
+                            href={link.href}
                             className="text-sm tracking-wide text-white/70 hover:text-white transition-colors"
-                            onClick={(e) => {
-                                scrollToSection(e, link.href, pathname);
-                                setMobileMenuOpen(false);
-                            }}
+                            onClick={() => setMobileMenuOpen(false)}
                         >
                             {link.label}
-                        </a>
-                        );
-                    })}
+                        </Link>
+                    ))}
                     <div className="flex flex-col gap-3 pt-3 border-t border-white/[0.06]">
                         <Link href="/invest/login" className="text-sm text-white/70 hover:text-white">
                             Login
