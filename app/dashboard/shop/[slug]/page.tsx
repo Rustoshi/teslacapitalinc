@@ -6,6 +6,8 @@ import ShopProduct from "@/models/ShopProduct";
 import VehicleDetails from "@/models/VehicleDetails";
 import EnergyDetails from "@/models/EnergyDetails";
 import PaymentOption from "@/models/PaymentOption";
+import BankPaymentOption from "@/models/BankPaymentOption";
+import WireTransferOption from "@/models/WireTransferOption";
 
 export const dynamic = "force-dynamic";
 
@@ -42,16 +44,29 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         details = { variants: [] };
     }
 
-    const cryptoWallets = await PaymentOption.find({ isActive: true }).lean();
+    const [cryptoWallets, bankOptions, wireOptions] = await Promise.all([
+        PaymentOption.find({ isActive: true }).lean(),
+        BankPaymentOption.find({ isActive: true }).lean(),
+        WireTransferOption.find({ isActive: true }).lean(),
+    ]);
 
     // Convert ObjectIds to strings for Client Component serialization
     const safeProduct = JSON.parse(JSON.stringify(product));
     const safeDetails = JSON.parse(JSON.stringify(details));
     const safeCryptoWallets = JSON.parse(JSON.stringify(cryptoWallets));
+    const safeBankOptions = JSON.parse(JSON.stringify(bankOptions));
+    const safeWireOptions = JSON.parse(JSON.stringify(wireOptions));
 
     return (
         <div className="w-full flex-1">
-            <OrderConfigurator product={safeProduct} details={safeDetails} cryptoWallets={safeCryptoWallets} isDashboard={true} />
+            <OrderConfigurator
+                product={safeProduct}
+                details={safeDetails}
+                cryptoWallets={safeCryptoWallets}
+                bankOptions={safeBankOptions}
+                wireOptions={safeWireOptions}
+                isDashboard={true}
+            />
         </div>
     );
 }
