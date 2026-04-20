@@ -7,6 +7,8 @@ export interface IWireTransferOption extends Document {
     bankAddress?: string;
     swiftCode: string;
     accountNumber: string;
+    accountType?: string;
+    routingNumber?: string;
     iban?: string;
     currency: string;
     referenceNote?: string;
@@ -24,6 +26,8 @@ const WireTransferOptionSchema = new Schema<IWireTransferOption>(
         bankAddress: { type: String },
         swiftCode: { type: String, required: true },
         accountNumber: { type: String, required: true },
+        accountType: { type: String },
+        routingNumber: { type: String },
         iban: { type: String },
         currency: { type: String, default: 'USD' },
         referenceNote: { type: String },

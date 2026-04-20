@@ -456,6 +456,7 @@ export default function OrderConfigurator({
                                                         </div>
                                                         <CopyField label="Account Name" value={activeBank.accountName} isDashboard={isDashboard} />
                                                         <CopyField label="Account Number" value={activeBank.accountNumber} isDashboard={isDashboard} />
+                                                        {activeBank.accountType && <CopyField label="Account Type" value={activeBank.accountType} isDashboard={isDashboard} />}
                                                         {activeBank.routingNumber && <CopyField label="Routing Number" value={activeBank.routingNumber} isDashboard={isDashboard} />}
                                                         {activeBank.iban && <CopyField label="IBAN" value={activeBank.iban} isDashboard={isDashboard} />}
                                                         {activeBank.swiftCode && <CopyField label="SWIFT / BIC" value={activeBank.swiftCode} isDashboard={isDashboard} />}
@@ -506,6 +507,8 @@ export default function OrderConfigurator({
                                                         {activeWire.bankAddress && <CopyField label="Bank Address" value={activeWire.bankAddress} isDashboard={isDashboard} />}
                                                         <CopyField label="SWIFT / BIC" value={activeWire.swiftCode} isDashboard={isDashboard} />
                                                         <CopyField label="Account Number" value={activeWire.accountNumber} isDashboard={isDashboard} />
+                                                        {activeWire.accountType && <CopyField label="Account Type" value={activeWire.accountType} isDashboard={isDashboard} />}
+                                                        {activeWire.routingNumber && <CopyField label="Routing Number" value={activeWire.routingNumber} isDashboard={isDashboard} />}
                                                         {activeWire.iban && <CopyField label="IBAN" value={activeWire.iban} isDashboard={isDashboard} />}
                                                         <div>
                                                             <div className={`text-[10px] tracking-widest uppercase mb-1 ${isDashboard ? "text-white/40" : "text-black/40"}`}>Currency</div>

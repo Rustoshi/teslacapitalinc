@@ -291,6 +291,10 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                             <input name="accountNumber" type="text" required placeholder="e.g. 1234567890" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
                                         </div>
                                         <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Account Type</label>
+                                            <input name="accountType" type="text" placeholder="e.g. Checking, Savings (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
                                             <label className="text-[10px] uppercase tracking-widest text-white/40">Currency</label>
                                             <input name="currency" type="text" defaultValue="USD" placeholder="e.g. USD" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
                                         </div>
@@ -343,9 +347,15 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                                 <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Account Number</div>
                                                 <div className="text-xs font-mono text-white/70">{bank.accountNumber}</div>
                                             </div>
+                                            {bank.accountType && (
+                                                <div>
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Account Type</div>
+                                                    <div className="text-xs font-mono text-white/70">{bank.accountType}</div>
+                                                </div>
+                                            )}
                                             {bank.routingNumber && (
                                                 <div>
-                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Routing</div>
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Routing Number</div>
                                                     <div className="text-xs font-mono text-white/70">{bank.routingNumber}</div>
                                                 </div>
                                             )}
@@ -416,6 +426,14 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                             <input name="accountNumber" type="text" required placeholder="e.g. 1234567890" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
                                         </div>
                                         <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Account Type</label>
+                                            <input name="accountType" type="text" placeholder="e.g. Checking, Savings (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40">Routing Number</label>
+                                            <input name="routingNumber" type="text" placeholder="e.g. 021000021 (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
+                                        </div>
+                                        <div className="space-y-1.5">
                                             <label className="text-[10px] uppercase tracking-widest text-white/40">IBAN</label>
                                             <input name="iban" type="text" placeholder="e.g. GB29 NWBK 6016 1331 (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
                                         </div>
@@ -468,6 +486,18 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                                 <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Account Number</div>
                                                 <div className="text-xs font-mono text-white/70">{wire.accountNumber}</div>
                                             </div>
+                                            {wire.accountType && (
+                                                <div>
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Account Type</div>
+                                                    <div className="text-xs font-mono text-white/70">{wire.accountType}</div>
+                                                </div>
+                                            )}
+                                            {wire.routingNumber && (
+                                                <div>
+                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Routing Number</div>
+                                                    <div className="text-xs font-mono text-white/70">{wire.routingNumber}</div>
+                                                </div>
+                                            )}
                                             {wire.iban && (
                                                 <div>
                                                     <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">IBAN</div>

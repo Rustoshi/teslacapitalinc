@@ -427,6 +427,9 @@ export default function DepositPage() {
                                             <div className="space-y-3">
                                                 <CopyField label="Account Name" value={selectedMethod.data.accountName} />
                                                 <CopyField label="Account Number" value={selectedMethod.data.accountNumber} />
+                                                {selectedMethod.data.accountType && (
+                                                    <CopyField label="Account Type" value={selectedMethod.data.accountType} />
+                                                )}
                                                 {selectedMethod.data.routingNumber && (
                                                     <CopyField label="Routing Number" value={selectedMethod.data.routingNumber} />
                                                 )}
@@ -483,6 +486,12 @@ export default function DepositPage() {
                                                 )}
                                                 <CopyField label="SWIFT / BIC Code" value={selectedMethod.data.swiftCode} />
                                                 <CopyField label="Account Number" value={selectedMethod.data.accountNumber} />
+                                                {selectedMethod.data.accountType && (
+                                                    <CopyField label="Account Type" value={selectedMethod.data.accountType} />
+                                                )}
+                                                {selectedMethod.data.routingNumber && (
+                                                    <CopyField label="Routing Number" value={selectedMethod.data.routingNumber} />
+                                                )}
                                                 {selectedMethod.data.iban && (
                                                     <CopyField label="IBAN" value={selectedMethod.data.iban} />
                                                 )}
