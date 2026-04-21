@@ -7,7 +7,6 @@ export interface IBankPaymentOption extends Document {
     accountType?: string;
     routingNumber?: string;
     iban?: string;
-    swiftCode?: string;
     currency: string;
     instructions?: string;
     isActive: boolean;
@@ -23,7 +22,6 @@ const BankPaymentOptionSchema: Schema = new Schema(
         accountType: { type: String },
         routingNumber: { type: String },
         iban: { type: String },
-        swiftCode: { type: String },
         currency: { type: String, default: 'USD' },
         instructions: { type: String },
         isActive: { type: Boolean, default: true },

@@ -302,10 +302,6 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                             <label className="text-[10px] uppercase tracking-widest text-white/40">Routing Number</label>
                                             <input name="routingNumber" type="text" placeholder="e.g. 021000021 (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] uppercase tracking-widest text-white/40">SWIFT / BIC Code</label>
-                                            <input name="swiftCode" type="text" placeholder="e.g. CHASUS33 (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
-                                        </div>
                                         <div className="space-y-1.5 sm:col-span-2">
                                             <label className="text-[10px] uppercase tracking-widest text-white/40">IBAN</label>
                                             <input name="iban" type="text" placeholder="e.g. GB29 NWBK 6016 1331 9268 19 (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
@@ -365,12 +361,6 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                                     <div className="text-xs font-mono text-white/70 break-all">{bank.iban}</div>
                                                 </div>
                                             )}
-                                            {bank.swiftCode && (
-                                                <div>
-                                                    <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">SWIFT</div>
-                                                    <div className="text-xs font-mono text-white/70">{bank.swiftCode}</div>
-                                                </div>
-                                            )}
                                             {bank.instructions && (
                                                 <div className="pt-2 border-t border-white/[0.05]">
                                                     <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Instructions</div>
@@ -416,10 +406,6 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] uppercase tracking-widest text-white/40">Bank Address</label>
                                             <input name="bankAddress" type="text" placeholder="e.g. 270 Park Ave, New York (optional)" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] uppercase tracking-widest text-white/40">SWIFT / BIC Code <span className="text-red-500">*</span></label>
-                                            <input name="swiftCode" type="text" required placeholder="e.g. CHASUS33" className="w-full bg-black/50 border border-white/[0.1] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] uppercase tracking-widest text-white/40">Account Number <span className="text-red-500">*</span></label>
@@ -477,10 +463,6 @@ export default function SettingsTabs({ companyDetails, paymentOptions, bankPayme
                                             <div>
                                                 <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Beneficiary</div>
                                                 <div className="text-xs font-mono text-white/70">{wire.beneficiaryName}</div>
-                                            </div>
-                                            <div>
-                                                <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">SWIFT / BIC</div>
-                                                <div className="text-xs font-mono text-white/70">{wire.swiftCode}</div>
                                             </div>
                                             <div>
                                                 <div className="text-[10px] tracking-widest uppercase text-white/40 mb-0.5">Account Number</div>

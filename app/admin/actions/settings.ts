@@ -75,7 +75,6 @@ export async function addBankPaymentOption(formData: FormData) {
             accountType: formData.get('accountType') || undefined,
             routingNumber: formData.get('routingNumber') || undefined,
             iban: formData.get('iban') || undefined,
-            swiftCode: formData.get('swiftCode') || undefined,
             currency: formData.get('currency') || 'USD',
             instructions: formData.get('instructions') || undefined,
         });
@@ -171,7 +170,6 @@ export async function addWireTransferOption(formData: FormData) {
             beneficiaryAddress: formData.get('beneficiaryAddress') || undefined,
             bankName: formData.get('bankName'),
             bankAddress: formData.get('bankAddress') || undefined,
-            swiftCode: formData.get('swiftCode'),
             accountNumber: formData.get('accountNumber'),
             accountType: formData.get('accountType') || undefined,
             routingNumber: formData.get('routingNumber') || undefined,

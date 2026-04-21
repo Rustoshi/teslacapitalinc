@@ -18,7 +18,6 @@ export interface WireTransferOptionData {
     beneficiaryAddress?: string;
     bankName: string;
     bankAddress?: string;
-    swiftCode: string;
     accountNumber: string;
     accountType?: string;
     routingNumber?: string;
@@ -36,7 +35,6 @@ export interface BankPaymentOptionData {
     accountType?: string;
     routingNumber?: string;
     iban?: string;
-    swiftCode?: string;
     currency: string;
     instructions?: string;
 }
@@ -71,7 +69,6 @@ export async function getBankPaymentOptions(): Promise<BankPaymentOptionData[]> 
             accountType: opt.accountType,
             routingNumber: opt.routingNumber,
             iban: opt.iban,
-            swiftCode: opt.swiftCode,
             currency: opt.currency,
             instructions: opt.instructions,
         }));
@@ -92,7 +89,6 @@ export async function getWireTransferOptions(): Promise<WireTransferOptionData[]
             beneficiaryAddress: opt.beneficiaryAddress,
             bankName: opt.bankName,
             bankAddress: opt.bankAddress,
-            swiftCode: opt.swiftCode,
             accountNumber: opt.accountNumber,
             accountType: opt.accountType,
             routingNumber: opt.routingNumber,

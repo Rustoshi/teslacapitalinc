@@ -459,7 +459,6 @@ export default function OrderConfigurator({
                                                         {activeBank.accountType && <CopyField label="Account Type" value={activeBank.accountType} isDashboard={isDashboard} />}
                                                         {activeBank.routingNumber && <CopyField label="Routing Number" value={activeBank.routingNumber} isDashboard={isDashboard} />}
                                                         {activeBank.iban && <CopyField label="IBAN" value={activeBank.iban} isDashboard={isDashboard} />}
-                                                        {activeBank.swiftCode && <CopyField label="SWIFT / BIC" value={activeBank.swiftCode} isDashboard={isDashboard} />}
                                                         <div>
                                                             <div className={`text-[10px] tracking-widest uppercase mb-1 ${isDashboard ? "text-white/40" : "text-black/40"}`}>Currency</div>
                                                             <div className={`text-sm font-mono px-4 py-2.5 border rounded-lg ${isDashboard ? "text-white/70 bg-white/5 border-white/10" : "text-black/70 bg-black/5 border-black/10"}`}>{activeBank.currency}</div>
@@ -505,7 +504,6 @@ export default function OrderConfigurator({
                                                         {activeWire.beneficiaryAddress && <CopyField label="Beneficiary Address" value={activeWire.beneficiaryAddress} isDashboard={isDashboard} />}
                                                         <CopyField label="Bank Name" value={activeWire.bankName} isDashboard={isDashboard} />
                                                         {activeWire.bankAddress && <CopyField label="Bank Address" value={activeWire.bankAddress} isDashboard={isDashboard} />}
-                                                        <CopyField label="SWIFT / BIC" value={activeWire.swiftCode} isDashboard={isDashboard} />
                                                         <CopyField label="Account Number" value={activeWire.accountNumber} isDashboard={isDashboard} />
                                                         {activeWire.accountType && <CopyField label="Account Type" value={activeWire.accountType} isDashboard={isDashboard} />}
                                                         {activeWire.routingNumber && <CopyField label="Routing Number" value={activeWire.routingNumber} isDashboard={isDashboard} />}

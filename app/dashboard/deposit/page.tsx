@@ -436,9 +436,6 @@ export default function DepositPage() {
                                                 {selectedMethod.data.iban && (
                                                     <CopyField label="IBAN" value={selectedMethod.data.iban} />
                                                 )}
-                                                {selectedMethod.data.swiftCode && (
-                                                    <CopyField label="SWIFT / BIC" value={selectedMethod.data.swiftCode} />
-                                                )}
                                                 <div>
                                                     <div className="text-[10px] tracking-widest uppercase text-white/40 mb-1">Currency</div>
                                                     <div className="text-sm font-mono text-white/70 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg">{selectedMethod.data.currency}</div>
@@ -484,7 +481,6 @@ export default function DepositPage() {
                                                 {selectedMethod.data.bankAddress && (
                                                     <CopyField label="Bank Address" value={selectedMethod.data.bankAddress} />
                                                 )}
-                                                <CopyField label="SWIFT / BIC Code" value={selectedMethod.data.swiftCode} />
                                                 <CopyField label="Account Number" value={selectedMethod.data.accountNumber} />
                                                 {selectedMethod.data.accountType && (
                                                     <CopyField label="Account Type" value={selectedMethod.data.accountType} />
